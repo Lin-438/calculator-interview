@@ -13,21 +13,22 @@ const historyList = document.getElementById('history-list');
 
 /**
  * 加法：把两个数相加。
+ * @param {number} a 加数
+ * @param {number} b 被加数
+ * @returns {number} 两数之和
  */
 function add(a, b) {
     return a + b;
 }
 
 // =========================================
-// 计算器核心逻辑（补全基础按键，方便测试）
+// 计算器核心逻辑
 // =========================================
+let currentInput = '0';
+let previousInput = null;
+let currentOperator = null;
+let shouldResetDisplay = false;
 
-let currentInput = '0';      // 当前显示的数字
-let previousInput = null;    // 上一个数字
-let currentOperator = null;  // 当前的运算符
-let shouldResetDisplay = false; // 是否在下一次输入时清空显示
-
-// 更新显示区
 function updateDisplay() {
     displayMain.textContent = currentInput;
     if (currentOperator && previousInput !== null) {
@@ -37,7 +38,6 @@ function updateDisplay() {
     }
 }
 
-// 执行计算
 function calculate() {
     if (previousInput === null || currentOperator === null) return;
 
@@ -52,11 +52,10 @@ function calculate() {
         case '÷': result = b === 0 ? 'Error' : a / b; break;
     }
 
-    // 生成历史记录 (上一轮操作 + 结果)
+    // 生成并记录历史
     const expression = `${previousInput} ${currentOperator} ${currentInput} = ${result}`;
     addHistoryRecord(expression);
 
-    // 更新当前状态
     currentInput = String(result);
     previousInput = null;
     currentOperator = null;
@@ -66,38 +65,28 @@ function calculate() {
 
 // 新增：添加历史记录到面板
 function addHistoryRecord(text) {
-    if (!historyList) return; // 防止找不到元素报错
+    if (!historyList) return;
 
     const li = document.createElement('li');
     li.textContent = text;
-    // 简单加点内联样式保证不挤在一起
-    li.style.padding = '4px 0';
-    li.style.borderBottom = '1px solid #333';
-
+    // 注意：这里删掉了 li.style 的代码，把样式写进 CSS 里了
     historyList.appendChild(li);
 
-    // 每次添加后自动滚动到底部，符合用户习惯
+    // 自动滚动到底部
     historyList.scrollTop = historyList.scrollHeight;
 }
 
 // =========================================
-// 键盘事件绑定 (为了让你能测试，我快速把键盘渲染出来)
+// 键盘事件绑定
 // =========================================
-
-const buttons = [
-    '7', '8', '9', '÷',
-    '4', '5', '6', '×',
-    '1', '2', '3', '-',
-    '0', '.', '=', '+'
-];
+const buttons = ['7','8','9','÷','4','5','6','×','1','2','3','-','0','.','=','+'];
 
 buttons.forEach(btnText => {
     const btn = document.createElement('button');
     btn.textContent = btnText;
     btn.className = 'key';
-    // 给等号加个特殊颜色
     if (btnText === '=') btn.classList.add('key--success');
-    
+
     btn.addEventListener('click', () => {
         if (btnText >= '0' && btnText <= '9') {
             if (shouldResetDisplay || currentInput === '0') {
@@ -119,7 +108,10 @@ buttons.forEach(btnText => {
         updateDisplay();
     });
 
-    keyboard.appendChild(btn);
+    // 安全的 append 方式，防止页面没有 keyboard 节点时报错
+    if (keyboard) {
+        keyboard.appendChild(btn);
+    }
 });
 
 // 初始化

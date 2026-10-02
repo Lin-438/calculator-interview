@@ -91,3 +91,27 @@ body {
 .key--success { background: var(--key-success); }  /* 等号键 */
 
 .key--wide { grid-column: span 2; }  /* 占两列（如 0 键，对应 Python 版 colspan=2） */
+/* =========================================
+   历史记录面板样式
+   ========================================= */
+.history-panel {
+    margin-top: 20px;
+    border-top: 1px solid #444;
+    padding-top: 10px;
+}
+
+.history-panel h3 {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #fff;
+}
+
+#history-list {
+    max-height: 200px; /* 超过 200px 就出现滚动条 */
+    overflow-y: auto;  /* 允许上下滑动 */
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+    color: #ddd;
+    margin: 0;
+}
